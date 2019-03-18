@@ -58,7 +58,8 @@ class ReLULayer:
         # TODO: Implement forward pass
         # Hint: you'll need to save some information about X
         # to use it later in the backward pass
-        raise Exception("Not implemented!")
+        self.X = X
+        return np.maximum(X, 0)
 
     def backward(self, d_out):
         """
@@ -73,7 +74,9 @@ class ReLULayer:
           with respect to input
         """
         # TODO: Implement backward pass
-        raise Exception("Not implemented!")
+        d_input = np.ones_like(self.X)
+        d_input[np.where(self.X < 0)] = 0
+        d_result = d_out * d_input
         return d_result
 
     def params(self):
@@ -89,7 +92,8 @@ class FullyConnectedLayer:
 
     def forward(self, X):
         # TODO: Implement forward pass
-        raise Exception("Not implemented!")
+        this.X = X
+        return np.dot(X, W) + self.B
 
     def backward(self, d_out):
         """
@@ -113,9 +117,7 @@ class FullyConnectedLayer:
         # It should be pretty similar to linear classifier from
         # the previous assignment
 
-        raise Exception("Not implemented!")
-
-        return d_input
+        return d_result
 
     def params(self):
         return {'W': self.W, 'B': self.B}
