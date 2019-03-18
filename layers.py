@@ -58,7 +58,7 @@ class ReLULayer:
         # TODO: Implement forward pass
         # Hint: you'll need to save some information about X
         # to use it later in the backward pass
-        raise Exception("Not implemented!")
+
 
     def backward(self, d_out):
         """
@@ -73,8 +73,6 @@ class ReLULayer:
           with respect to input
         """
         # TODO: Implement backward pass
-        raise Exception("Not implemented!")
-        return d_result
 
     def params(self):
         # ReLU Doesn't have any parameters
@@ -89,7 +87,7 @@ class FullyConnectedLayer:
 
     def forward(self, X):
         # TODO: Implement forward pass
-        raise Exception("Not implemented!")
+
 
     def backward(self, d_out):
         """
