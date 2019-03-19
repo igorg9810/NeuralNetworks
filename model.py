@@ -16,8 +16,8 @@ class TwoLayerNet:
         """
         self.reg = reg
         # TODO Create necessary layers
-        self.n_output = n_output
-        self.hidden_layer = FullyConnectedLayer(n_input, hidden_layer_size)
+        self.hidden_layer1 = FullyConnectedLayer(n_input, hidden_layer_size)
+        self.hidden_layer2 = FullyConnectedLayer(hidden_layer_size, n_output)
         self.relu_layer = ReLULayer()
 
     def compute_loss_and_gradients(self, X, y):
@@ -31,22 +31,31 @@ class TwoLayerNet:
         """
         params = self.params()	
         for param_key in params:
+            #print(param_key, ' shape is ', params[param_key].value.shape)
             params[param_key].grad = 0
 		
         # TODO Compute loss and fill param gradients
         # by running forward and backward passes through the model
 
-        a = self.hidden_layer.forward(X)
-        output = self.relu_layer.forward(a)
+        a1 = self.hidden_layer1.forward(X)
+        #print(a1.shape, ' - a1')
+        a2 = self.hidden_layer2.forward(a1)
+        #print(a2.shape, ' - a2')
+        output = self.relu_layer.forward(a2)
+        #print(output.shape, ' - output')
         loss, dprediction = softmax_with_cross_entropy(output, y)
-        d_out_hidden = self.relu_layer.backward(dprediction)
-        self.hidden_layer.backward(d_out_hidden)
+        #print(dprediction.shape, ' - dpred')
+        d_out_hidden2 = self.relu_layer.backward(dprediction)
+        #print(d_out_hidden2.shape, ' - d_out_hidden2')
+        d_out_hidden1 = self.hidden_layer2.backward(d_out_hidden2)
+        #print(d_out_hidden1.shape, ' - d_out_hidden1')
+        self.hidden_layer1.backward(d_out_hidden1)
 
         # After that, implement l2 regularization on all params
         # Hint: use self.params()
         for param_key in params:
             loss += self.reg*np.sum(np.square(params[param_key].value))
-            params[param_key].grad += 2*np.array(params[param_key].value)*reg_strength
+            params[param_key].grad += 2*np.array(params[param_key].value)*self.reg
 
         return loss
 
@@ -66,8 +75,13 @@ class TwoLayerNet:
         # Hint: some of the code of the compute_loss_and_gradients
         # can be reused
         pred = np.zeros(X.shape[0], np.int)
-
-        raise Exception("Not implemented!")
+        a1 = self.hidden_layer1.forward(X)
+        #print(a1.shape, ' - a1')
+        a2 = self.hidden_layer2.forward(a1)
+        #print(a2.shape, ' - a2')
+        output = self.relu_layer.forward(a2)
+        #print(output.shape, ' - output')
+        pred = np.argmax(output, axis = 1)
         return pred
 
     def params(self):
@@ -75,8 +89,12 @@ class TwoLayerNet:
 
         # TODO Implement aggregating all of the params
 
-        hidden_layer_params = self.hidden_layer.params()
-        for param_key in hidden_layer_params:
-            result[param_key] = hidden_layer_params[param_key]
+        hidden_layer_params1 = self.hidden_layer1.params()
+        for param_key in hidden_layer_params1:
+            result[param_key + '-1'] = hidden_layer_params1[param_key]
+			
+        hidden_layer_params2 = self.hidden_layer2.params()
+        for param_key in hidden_layer_params2:
+            result[param_key + '-2'] = hidden_layer_params2[param_key]
 
         return result

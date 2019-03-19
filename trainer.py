@@ -81,6 +81,8 @@ class Trainer:
         if self.optimizers is None:
             self.setup_optimizers()
 
+        params = self.model.params()
+			
         num_train = self.dataset.train_X.shape[0]
 
         loss_history = []
@@ -100,8 +102,10 @@ class Trainer:
                 # use model to generate loss and gradients for all
                 # the params
 
-                raise Exception("Not implemented!")
-
+                loss = self.model.compute_loss_and_gradients(self.dataset.train_X[batch_indices], self.dataset.train_y[batch_indices])
+                for param_key in params:
+                    params[param_key].value -= self.learning_rate*params[param_key].grad
+				
                 for param_name, param in self.model.params().items():
                     optimizer = self.optimizers[param_name]
                     param.value = optimizer.update(param.value, param.grad, self.learning_rate)
