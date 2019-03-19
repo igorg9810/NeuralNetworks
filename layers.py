@@ -1,5 +1,5 @@
 import numpy as np
-
+import math
 
 def l2_regularization(W, reg_strength):
     """
@@ -14,7 +14,9 @@ def l2_regularization(W, reg_strength):
       gradient, np.array same shape as W - gradient of weight by l2 loss
     """
     # TODO: Copy from the previous assignment
-    raise Exception("Not implemented!")
+    loss = reg_strength*np.sum(np.square(W))
+    grad = 2*np.array(W)*reg_strength
+
     return loss, grad
 
 
@@ -34,9 +36,33 @@ def softmax_with_cross_entropy(preds, target_index):
       dprediction, np array same shape as predictions - gradient of predictions by loss value
     """
     # TODO: Copy from the previous assignment
-    raise Exception("Not implemented!")
-
-    return loss, d_preds
+    exp_vect = np.vectorize(math.exp)
+    exponents = np.array(preds.shape)
+    probs = np.zeros(exponents.shape)
+    if (len(preds.shape) == 2):
+        rowmax = np.amax(preds, axis = 1, keepdims=True)
+        new_predictions = np.subtract(preds, rowmax)
+        exponents = exp_vect(new_predictions)
+        exp_sum = np.sum(exponents, axis = 1, keepdims=True)
+        probs = exponents/exp_sum
+    else:
+        new_predictions = preds - np.max(preds)
+        exponents = exp_vect(new_predictions)
+        exp_sum = np.sum(exponents)
+        probs = exponents/exp_sum
+    #print(probs, 'Probs')
+    dprediction = np.array(probs)
+    if (type(target_index) != int):
+        m = len(target_index)
+        #print(probs[range(m), target_index], 'Probs vector for true class')
+        loss = np.sum(-1*np.log(probs[range(m), target_index]))/m
+        dprediction[range(m), target_index] -= 1
+        dprediction /= m
+    else:
+        loss = -1*np.log(probs[target_index])
+        dprediction[target_index] -= 1
+        #print(probs[target_index], 'Probs value for true class')
+    return loss, dprediction
 
 
 class Param:
@@ -92,8 +118,9 @@ class FullyConnectedLayer:
 
     def forward(self, X):
         # TODO: Implement forward pass
-        this.X = X
-        return np.dot(X, W) + self.B
+        self.X = X
+        out = np.dot(X, self.W.value) + self.B.value
+        return out
 
     def backward(self, d_out):
         """
@@ -116,7 +143,11 @@ class FullyConnectedLayer:
 
         # It should be pretty similar to linear classifier from
         # the previous assignment
-
+        d_result = np.dot(d_out, (self.W.value).T)
+        dW = np.dot(self.X.T, d_out)
+        dB = np.sum(d_out, axis=0, keepdims=True) # Суммируем градиент выхода по строкам
+        self.W.grad = dW
+        self.B.grad = dB
         return d_result
 
     def params(self):
