@@ -42,6 +42,7 @@ class TwoLayerNet:
         a2 = self.hidden_layer2.forward(a1)
         #print(a2.shape, ' - a2')
         output = self.relu_layer.forward(a2)
+        #print(output, ' - ReLULayer output')
         #print(output.shape, ' - output')
         loss, dprediction = softmax_with_cross_entropy(output, y)
         #print(dprediction.shape, ' - dpred')
@@ -54,8 +55,12 @@ class TwoLayerNet:
         # After that, implement l2 regularization on all params
         # Hint: use self.params()
         for param_key in params:
-            loss += self.reg*np.sum(np.square(params[param_key].value))
-            params[param_key].grad += 2*np.array(params[param_key].value)*self.reg
+            reg_loss, reg_grad = l2_regularization(params[param_key].value, self.reg)
+            loss += reg_loss
+            #print(param_key, ' grad before ', params[param_key].grad)
+            params[param_key].grad += reg_grad
+            #loss += self.reg*np.sum(np.square(params[param_key].value))
+            #params[param_key].grad += 2*np.array(params[param_key].value)*self.reg
 
         return loss
 
