@@ -91,6 +91,7 @@ class Trainer:
         loss_history = []
         train_acc_history = []
         val_acc_history = []
+        learning_rate_history = []
 
         for epoch in range(self.num_epochs):
             shuffled_indices = np.arange(num_train)
@@ -98,6 +99,7 @@ class Trainer:
             sections = np.arange(self.batch_size, num_train, self.batch_size)
             batches_indices = np.array_split(shuffled_indices, sections)
 
+            learning_rate_history.append(self.learning_rate)
             batch_losses = []
 
             for batch_indices in batches_indices:
@@ -133,4 +135,4 @@ class Trainer:
             train_acc_history.append(train_accuracy)
             val_acc_history.append(val_accuracy)
 
-        return loss_history, train_acc_history, val_acc_history
+        return loss_history, train_acc_history, val_acc_history, learning_rate_history
