@@ -18,7 +18,8 @@ class TwoLayerNet:
         # TODO Create necessary layers
         self.hidden_layer1 = FullyConnectedLayer(n_input, hidden_layer_size)
         self.hidden_layer2 = FullyConnectedLayer(hidden_layer_size, n_output)
-        self.relu_layer = ReLULayer()
+        self.relu_layer1 = ReLULayer()
+        self.relu_layer2 = ReLULayer()
 
     def compute_loss_and_gradients(self, X, y):
         """
@@ -37,20 +38,22 @@ class TwoLayerNet:
         # TODO Compute loss and fill param gradients
         # by running forward and backward passes through the model
 
-        a1 = self.hidden_layer1.forward(X)
+        z1 = self.hidden_layer1.forward(X)
+        a1 = self.relu_layer1.forward(z1)
         #print(a1.shape, ' - a1')
         a2 = self.hidden_layer2.forward(a1)
         #print(a2.shape, ' - a2')
-        output = self.relu_layer.forward(a2)
+        output = self.relu_layer2.forward(a2)
         #print(output, ' - ReLULayer output')
         #print(output.shape, ' - output')
         loss, dprediction = softmax_with_cross_entropy(output, y)
         #print(dprediction.shape, ' - dpred')
-        d_out_hidden2 = self.relu_layer.backward(dprediction)
+        d_out_hidden2 = self.relu_layer2.backward(dprediction)
         #print(d_out_hidden2.shape, ' - d_out_hidden2')
         d_out_hidden1 = self.hidden_layer2.backward(d_out_hidden2)
         #print(d_out_hidden1.shape, ' - d_out_hidden1')
-        self.hidden_layer1.backward(d_out_hidden1)
+        d_out_relu1 = self.relu_layer1.backward(d_out_hidden1)
+        self.hidden_layer1.backward(d_out_relu1)
 
         # After that, implement l2 regularization on all params
         # Hint: use self.params()
@@ -79,12 +82,13 @@ class TwoLayerNet:
         # TODO: Implement predict
         # Hint: some of the code of the compute_loss_and_gradients
         # can be reused
-        pred = np.zeros(X.shape[0], np.int)
-        a1 = self.hidden_layer1.forward(X)
+        pred = np.zeros(X.shape[0], np.int) 
+        z1 = self.hidden_layer1.forward(X)
+        a1 = self.relu_layer1.forward(z1)
         #print(a1.shape, ' - a1')
         a2 = self.hidden_layer2.forward(a1)
         #print(a2.shape, ' - a2')
-        output = self.relu_layer.forward(a2)
+        output = self.relu_layer2.forward(a2)
         #print(output.shape, ' - output')
         pred = np.argmax(output, axis = 1)
         return pred

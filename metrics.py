@@ -13,6 +13,6 @@ def multiclass_accuracy(prediction, ground_truth):
     '''
     # TODO: Implement computing accuracy
 	
-    #print(np.sum(prediction == ground_truth), ' out of ', len(ground_truth))
+    print(np.sum(prediction == ground_truth), ' out of ', len(ground_truth))
     accuracy = np.sum(prediction == ground_truth)/len(prediction)
     return accuracy
