@@ -43,14 +43,18 @@ class TwoLayerNet:
         #print(a1.shape, ' - a1')
         a2 = self.hidden_layer2.forward(a1)
         #print(a2.shape, ' - a2')
+        '''
         output = self.relu_layer2.forward(a2)
+        '''
         #print(output, ' - ReLULayer output')
         #print(output.shape, ' - output')
-        loss, dprediction = softmax_with_cross_entropy(output, y)
+        loss, dprediction = softmax_with_cross_entropy(a2, y)
         #print(dprediction.shape, ' - dpred')
+        '''
         d_out_hidden2 = self.relu_layer2.backward(dprediction)
+        '''
         #print(d_out_hidden2.shape, ' - d_out_hidden2')
-        d_out_hidden1 = self.hidden_layer2.backward(d_out_hidden2)
+        d_out_hidden1 = self.hidden_layer2.backward(dprediction)
         #print(d_out_hidden1.shape, ' - d_out_hidden1')
         d_out_relu1 = self.relu_layer1.backward(d_out_hidden1)
         self.hidden_layer1.backward(d_out_relu1)
